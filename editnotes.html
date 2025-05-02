@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Note</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .note-form {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px #eee;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Edit Note</h1>
+    <div class="navigation">
+        <a href="index.html" style="color:blue; font-weight: bold;">Home</a> |
+        <a href="addnotes.html" style="color:blue; font-weight: bold;">Add New Note</a>
+    </div>
+    <div class="note-form">
+        <form id="editNoteForm">
+            <input type="hidden" id="noteKey">
+            <div class="form-group">
+                <label for="noteTitle">Title:</label>
+                <input type="text" id="noteTitle" name="noteTitle" required>
+            </div>
+            <div class="form-group">
+                <label for="noteComment">Comment:</label>
+                <textarea id="noteComment" name="noteComment" required></textarea>
+            </div>
+            <button type="submit">Save Changes</button>
+            <button type="button" onclick="window.location.href='index.html'">Cancel</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const keyToEdit = urlParams.get('key');
+
+            if (keyToEdit) {
+                const storedNotes = localStorage.getItem('notes');
+                const notes = storedNotes ? JSON.parse(storedNotes) : [];
+                const noteToEdit = notes.find(note => note.key === keyToEdit);
+
+                if (noteToEdit) {
+                    document.getElementById('noteKey').value = noteToEdit.key;
+                    document.getElementById('noteTitle').value = noteToEdit.title;
+                    document.getElementById('noteComment').value = noteToEdit.comment;
+                } else {
+                    alert(`Note with key "${keyToEdit}" not found for editing.`);
+                    window.location.href = 'index.html'; // Redirect back home if note not found
+                }
+            } else {
+                alert('No key provided for editing.');
+                window.location.href = 'index.html'; // Redirect back home if no key in URL
+            }
+
+            document.getElementById('editNoteForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const updatedTitle = document.getElementById('noteTitle').value.trim();
+                const updatedComment = document.getElementById('noteComment').value.trim();
+                const noteKey = document.getElementById('noteKey').value;
+
+                if (updatedTitle && updatedComment && noteKey) {
+                    const storedNotes = localStorage.getItem('notes');
+                    const notes = storedNotes ? JSON.parse(storedNotes) : [];
+
+                    const indexToUpdate = notes.findIndex(note => note.key === noteKey);
+
+                    if (indexToUpdate !== -1) {
+                        notes[indexToUpdate] = { key: noteKey, title: updatedTitle, comment: updatedComment };
+                        localStorage.setItem('notes', JSON.stringify(notes));
+                        window.location.href = 'index.html';
+                    } else {
+                        alert(`Note with key "${noteKey}" not found for updating.`);
+                    }
+                } else {
+                    alert('Please ensure title and comment are filled.');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add a Note</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        input[type="text"],
+        textarea {
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        textarea {
+            width: 300px;
+            height: 120px;
+            resize: vertical;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Add a Note</h1>
+    <div class="navigation">
+        <a href="index.html" style="color:blue; font-weight: bold;">Home</a> |
+        <a href="addnotes.html" style="color:blue; font-weight: bold;">Add New Note</a>
+    </div>
+    <br><br>
+
+    <div>
+        <label for="key">Key:</label>
+        <input type="text" id="key">
+    </div>
+    <br>
+    <div>
+        <label for="title">Title:</label>
+        <input type="text" id="title">
+    </div>
+    <br><br>
+    <div>
+        <label for="comment">Comment:</label> <br>
+        <textarea id="comment"></textarea>
+    </div>
+    <br>
+    <button onclick="submitNote()">Submit</button>
+
+    <script>
+        function submitNote() {
+            const key = document.getElementById('key').value.trim();
+            const title = document.getElementById('title').value.trim();
+            const comment = document.getElementById('comment').value.trim();
+
+            if (key && title && comment) {
+                const newNote = { key: key, title: title, comment: comment };
+
+                // Retrieve existing notes from local storage
+                const storedNotes = localStorage.getItem('notes');
+                const notes = storedNotes ? JSON.parse(storedNotes) : [];
+
+                // Check if a note with the same key already exists
+                const existingNoteIndex = notes.findIndex(note => note.key === key);
+
+                if (existingNoteIndex !== -1) {
+                    alert(`A note with the key "${key}" already exists. Please use a different key.`);
+                    return;
+                }
+
+                notes.push(newNote);
+                // Store the updated notes back in local storage
+                localStorage.setItem('notes', JSON.stringify(notes));
+                window.location.href = "index.html";
+            } else {
+                alert("Please fill in all the fields.");
+            }
+        }
+    </script>
+
+</body>
+</html>
